@@ -17,6 +17,7 @@
         android:textSize="80sp"/>
 
     <TextView
+        android:id="@+id/tvRecord"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/tvTime"
@@ -36,7 +37,8 @@
             android:background="#03CC3F"
             android:text="시작"
             android:visibility="visible"
-            style="@style/MyButtonStyle"/>
+            style="@style/MyButtonStyle"
+            android:onClick="onClickStart"/>
 
         <LinearLayout
             android:id="@+id/button_container_in_run"
@@ -52,7 +54,8 @@
                 android:layout_weight="1"
                 android:background="@color/myRed"
                 android:text="중지"
-                style="@style/MyButtonStyle"/>
+                style="@style/MyButtonStyle"
+                android:onClick="onClickStop"/>
 
             <Button
                 android:id="@+id/btnRecord"
@@ -61,7 +64,8 @@
                 android:layout_weight="1"
                 android:background="@color/myBlue"
                 android:text="기록"
-                style="@style/MyButtonStyle"/>
+                style="@style/MyButtonStyle"
+                android:onClick="onClickRecord"/>
         </LinearLayout>
 
         <LinearLayout
@@ -78,7 +82,8 @@
                 android:layout_weight="1"
                 android:background="@color/myGreen"
                 android:text="계속"
-                style="@style/MyButtonStyle"/>
+                style="@style/MyButtonStyle"
+                android:onClick="onClickContinue"/>
 
             <Button
                 android:id="@+id/btnReset"
@@ -87,7 +92,8 @@
                 android:layout_weight="1"
                 android:background="@color/myBlue"
                 android:text="초기화"
-                style="@style/MyButtonStyle"/>
+                style="@style/MyButtonStyle"
+                android:onClick="onClickReset"/>
         </LinearLayout>
 
     </FrameLayout>
