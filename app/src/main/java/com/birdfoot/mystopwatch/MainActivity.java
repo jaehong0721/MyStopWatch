@@ -19,9 +19,13 @@ public class MainActivity extends AppCompatActivity implements SetTimeListener{
 
     private Button btnStart;
 
+    // '정지', '기록' 버튼을 담고 있는 컨테이너뷰
     private View buttonContainerInRun;
+
+    // '계속', '초기화' 버튼을 담고 있는 컨테이너뷰
     private View buttonContainerInStop;
 
+    // 핸들러를 가지고 시간을 처리하는 클래스
     private Timer timer;
 
     private RvRecordAdapter adapter;
@@ -53,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements SetTimeListener{
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        //앱이 종료될 때, 타이머 기능도 off
         timer.quitTime();
     }
 
@@ -77,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements SetTimeListener{
     public void onClickStart(View v) {
         timer.startTime();
 
+        //스탑 워치 동작 유무에 따라 버튼을 교체
         btnStart.setVisibility(View.GONE);
         buttonContainerInRun.setVisibility(View.VISIBLE);
     }
@@ -102,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements SetTimeListener{
     public void onClickReset(View v) {
         timer.quitTime();
 
+        // UI를 초기 상태로 리셋
         tvTime.setText(getFormattedTimeString(0L));
 
         items.clear();
