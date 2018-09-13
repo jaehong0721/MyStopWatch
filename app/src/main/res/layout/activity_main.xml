@@ -16,12 +16,13 @@
         android:text="00:00.00"
         android:textSize="80sp"/>
 
-    <TextView
-        android:id="@+id/tvRecord"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvRecord"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/tvTime"
-        android:layout_above="@+id/button_container"/>
+        android:layout_above="@+id/button_container"
+        tools:listitem="@layout/item_recorded_time"/>
 
     <FrameLayout
         android:id="@+id/button_container"
