@@ -1,5 +1,6 @@
 package com.birdfoot.mystopwatch;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,7 +12,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements SetTimeListener{
+public class MainActivity extends AppCompatActivity {
 
     private TextView tvTime;
 
@@ -31,6 +32,8 @@ public class MainActivity extends AppCompatActivity implements SetTimeListener{
     private RvRecordAdapter adapter;
     private ArrayList<Item> items;
 
+    private MainViewModel mainViewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,13 +48,32 @@ public class MainActivity extends AppCompatActivity implements SetTimeListener{
         buttonContainerInRun = findViewById(R.id.button_container_in_run);
         buttonContainerInStop = findViewById(R.id.button_container_in_stop);
 
-        timer = new Timer(this);
-
         items = new ArrayList<>();
         adapter = new RvRecordAdapter(items);
 
         rvRecord.setAdapter(adapter);
         rvRecord.setLayoutManager(new LinearLayoutManager(this));
+
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+
+        timer = mainViewModel.getTimer(new SetTimeListener() {
+
+            @Override public void onSetTime(long time) {
+                tvTime.setText(getFormattedTimeString(time));
+            }
+
+            @Override public void onRecordTime(long time) {
+                String recordedTime = getFormattedTimeString(time);
+
+                long elapsedTime = items.size() != 0 ? time - items.get(0).getTime() : time;
+
+                Item item = new Item(time, Integer.toString(items.size()+1), recordedTime, getFormattedTimeString(elapsedTime));
+                items.add(0,item);
+
+                adapter.notifyItemInserted(0);
+                rvRecord.scrollToPosition(0);
+            }
+        });
     }
 
     @Override
@@ -61,25 +83,7 @@ public class MainActivity extends AppCompatActivity implements SetTimeListener{
         //앱이 종료될 때, 타이머 기능도 off
         timer.quitTime();
     }
-
-    @Override
-    public void onSetTime(long time) {
-        tvTime.setText(getFormattedTimeString(time));
-    }
-
-    @Override
-    public void onRecordTime(long time) {
-        String recordedTime = getFormattedTimeString(time);
-
-        long elapsedTime = items.size() != 0 ? time - items.get(0).getTime() : time;
-
-        Item item = new Item(time, Integer.toString(items.size()+1), recordedTime, getFormattedTimeString(elapsedTime));
-        items.add(0,item);
-
-        adapter.notifyItemInserted(0);
-        rvRecord.scrollToPosition(0);
-    }
-
+    
     public void onClickStart(View v) {
         timer.startTime();
 

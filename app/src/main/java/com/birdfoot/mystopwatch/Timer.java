@@ -79,4 +79,8 @@ public class Timer {
     public void quitTime() {
         handler.removeMessages(SEND_TIME);
     }
+
+    public void setListener(SetTimeListener listener) {
+        this.listener = listener;
+    }
 }
