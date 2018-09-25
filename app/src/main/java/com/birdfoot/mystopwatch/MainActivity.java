@@ -9,14 +9,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements UpdateTimeUiListener{
 
     private TextView tvTime;
 
     private RecyclerView rvRecord;
+    private RvRecordAdapter adapter;
 
     private Button btnStart;
 
@@ -26,18 +24,15 @@ public class MainActivity extends AppCompatActivity {
     // '계속', '초기화' 버튼을 담고 있는 컨테이너뷰
     private View buttonContainerInStop;
 
-    // 핸들러를 가지고 시간을 처리하는 클래스
-    private Timer timer;
-
-    private RvRecordAdapter adapter;
-    private ArrayList<Item> items;
-
     private MainViewModel mainViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        mainViewModel.setUpdateTimeUiListener(this);
 
         tvTime = findViewById(R.id.tvTime);
 
@@ -48,32 +43,9 @@ public class MainActivity extends AppCompatActivity {
         buttonContainerInRun = findViewById(R.id.button_container_in_run);
         buttonContainerInStop = findViewById(R.id.button_container_in_stop);
 
-        items = new ArrayList<>();
-        adapter = new RvRecordAdapter(items);
-
+        adapter = new RvRecordAdapter(mainViewModel.getRecordedTimes());
         rvRecord.setAdapter(adapter);
         rvRecord.setLayoutManager(new LinearLayoutManager(this));
-
-        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-
-        timer = mainViewModel.getTimer(new SetTimeListener() {
-
-            @Override public void onSetTime(long time) {
-                tvTime.setText(getFormattedTimeString(time));
-            }
-
-            @Override public void onRecordTime(long time) {
-                String recordedTime = getFormattedTimeString(time);
-
-                long elapsedTime = items.size() != 0 ? time - items.get(0).getTime() : time;
-
-                Item item = new Item(time, Integer.toString(items.size()+1), recordedTime, getFormattedTimeString(elapsedTime));
-                items.add(0,item);
-
-                adapter.notifyItemInserted(0);
-                rvRecord.scrollToPosition(0);
-            }
-        });
     }
 
     @Override
@@ -81,11 +53,27 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
 
         //앱이 종료될 때, 타이머 기능도 off
-        timer.quitTime();
+        mainViewModel.quitTime();
     }
-    
+
+    @Override public void onUpdateNowTimeUi() {
+        tvTime.setText(mainViewModel.getFormattedNowTime());
+    }
+
+    @Override public void onUpdateRecordedTimeUi() {
+        adapter.notifyItemInserted(0);
+        rvRecord.scrollToPosition(0);
+    }
+
+    @Override public void onResetTimeUi() {
+        // UI를 초기 상태로 리셋
+        tvTime.setText(mainViewModel.getFormattedNowTime());
+
+        adapter.notifyDataSetChanged();
+    }
+
     public void onClickStart(View v) {
-        timer.startTime();
+        mainViewModel.startTime();
 
         //스탑 워치 동작 유무에 따라 버튼을 교체
         btnStart.setVisibility(View.GONE);
@@ -93,37 +81,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickStop(View v) {
-        timer.stopTime();
+        mainViewModel.stopTime();
 
         buttonContainerInRun.setVisibility(View.GONE);
         buttonContainerInStop.setVisibility(View.VISIBLE);
     }
 
     public void onClickRecord(View v) {
-        timer.recordTime();
+        mainViewModel.recordTime();
     }
 
     public void onClickContinue(View v) {
-        timer.continueTime();
+        mainViewModel.continueTime();
 
         buttonContainerInStop.setVisibility(View.GONE);
         buttonContainerInRun.setVisibility(View.VISIBLE);
     }
 
     public void onClickReset(View v) {
-        timer.quitTime();
-
-        // UI를 초기 상태로 리셋
-        tvTime.setText(getFormattedTimeString(0L));
-
-        items.clear();
-        adapter.notifyDataSetChanged();
+        mainViewModel.resetTime();
 
         buttonContainerInStop.setVisibility(View.GONE);
         btnStart.setVisibility(View.VISIBLE);
-    }
-
-    private String getFormattedTimeString(long time) {
-        return String.format(Locale.KOREA,"%02d:%02d.%02d", time/Timer.MIN, (time/Timer.SEC)%60, (time/Timer.CSEC)%100);
     }
 }

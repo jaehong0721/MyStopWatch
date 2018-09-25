@@ -80,7 +80,13 @@ public class Timer {
         handler.removeMessages(SEND_TIME);
     }
 
-    public void setListener(SetTimeListener listener) {
-        this.listener = listener;
+    public void resetTime() {
+        handler.removeMessages(SEND_TIME);
+
+        baseTime = 0;
+        nowTime = 0;
+        pauseTime = 0;
+
+        listener.onResetTime();
     }
 }
