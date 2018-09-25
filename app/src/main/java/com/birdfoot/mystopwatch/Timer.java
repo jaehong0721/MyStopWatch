@@ -77,6 +77,7 @@ public class Timer {
     }
 
     public void quitTime() {
+        pauseTime = System.nanoTime();
         handler.removeMessages(SEND_TIME);
     }
 

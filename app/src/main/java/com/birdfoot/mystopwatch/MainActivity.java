@@ -11,6 +11,12 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements UpdateTimeUiListener{
 
+    private static final int INITIAL_STATE = 0;
+    private static final int RUNNING_STATE = 1;
+    private static final int STOP_STATE = 2;
+
+    private int state;
+
     private TextView tvTime;
 
     private RecyclerView rvRecord;
@@ -48,6 +54,38 @@ public class MainActivity extends AppCompatActivity implements UpdateTimeUiListe
         rvRecord.setLayoutManager(new LinearLayoutManager(this));
     }
 
+    @Override protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        state = savedInstanceState.getInt("state");
+
+        switch (state) {
+            case RUNNING_STATE :
+                mainViewModel.continueTime();
+
+                btnStart.setVisibility(View.GONE);
+                buttonContainerInStop.setVisibility(View.GONE);
+                buttonContainerInRun.setVisibility(View.VISIBLE);
+                break;
+
+            case STOP_STATE :
+                tvTime.setText(mainViewModel.getFormattedNowTime());
+
+                btnStart.setVisibility(View.GONE);
+                buttonContainerInRun.setVisibility(View.GONE);
+                buttonContainerInStop.setVisibility(View.VISIBLE);
+                break;
+        }
+    }
+
+    @Override protected void onSaveInstanceState(Bundle outState) {
+
+        outState.putInt("state", state);
+
+        super.onSaveInstanceState(outState);
+
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -73,6 +111,8 @@ public class MainActivity extends AppCompatActivity implements UpdateTimeUiListe
     }
 
     public void onClickStart(View v) {
+        state = RUNNING_STATE;
+
         mainViewModel.startTime();
 
         //스탑 워치 동작 유무에 따라 버튼을 교체
@@ -81,6 +121,8 @@ public class MainActivity extends AppCompatActivity implements UpdateTimeUiListe
     }
 
     public void onClickStop(View v) {
+        state = STOP_STATE;
+
         mainViewModel.stopTime();
 
         buttonContainerInRun.setVisibility(View.GONE);
@@ -92,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements UpdateTimeUiListe
     }
 
     public void onClickContinue(View v) {
+        state = RUNNING_STATE;
+
         mainViewModel.continueTime();
 
         buttonContainerInStop.setVisibility(View.GONE);
@@ -99,6 +143,8 @@ public class MainActivity extends AppCompatActivity implements UpdateTimeUiListe
     }
 
     public void onClickReset(View v) {
+        state = INITIAL_STATE;
+
         mainViewModel.resetTime();
 
         buttonContainerInStop.setVisibility(View.GONE);
