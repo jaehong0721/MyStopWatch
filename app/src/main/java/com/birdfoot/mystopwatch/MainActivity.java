@@ -62,26 +62,18 @@ public class MainActivity extends AppCompatActivity implements UpdateTimeUiListe
         switch (state) {
             case RUNNING_STATE :
                 mainViewModel.continueTime();
-
-                btnStart.setVisibility(View.GONE);
-                buttonContainerInStop.setVisibility(View.GONE);
-                buttonContainerInRun.setVisibility(View.VISIBLE);
+                setButtonInRun();
                 break;
 
             case STOP_STATE :
                 tvTime.setText(mainViewModel.getFormattedNowTime());
-
-                btnStart.setVisibility(View.GONE);
-                buttonContainerInRun.setVisibility(View.GONE);
-                buttonContainerInStop.setVisibility(View.VISIBLE);
+                setButtonInStop();
                 break;
         }
     }
 
     @Override protected void onSaveInstanceState(Bundle outState) {
-
         outState.putInt("state", state);
-
         super.onSaveInstanceState(outState);
 
     }
@@ -116,8 +108,7 @@ public class MainActivity extends AppCompatActivity implements UpdateTimeUiListe
         mainViewModel.startTime();
 
         //스탑 워치 동작 유무에 따라 버튼을 교체
-        btnStart.setVisibility(View.GONE);
-        buttonContainerInRun.setVisibility(View.VISIBLE);
+        setButtonInRun();
     }
 
     public void onClickStop(View v) {
@@ -125,8 +116,7 @@ public class MainActivity extends AppCompatActivity implements UpdateTimeUiListe
 
         mainViewModel.stopTime();
 
-        buttonContainerInRun.setVisibility(View.GONE);
-        buttonContainerInStop.setVisibility(View.VISIBLE);
+        setButtonInStop();
     }
 
     public void onClickRecord(View v) {
@@ -138,8 +128,7 @@ public class MainActivity extends AppCompatActivity implements UpdateTimeUiListe
 
         mainViewModel.continueTime();
 
-        buttonContainerInStop.setVisibility(View.GONE);
-        buttonContainerInRun.setVisibility(View.VISIBLE);
+        setButtonInRun();
     }
 
     public void onClickReset(View v) {
@@ -147,7 +136,24 @@ public class MainActivity extends AppCompatActivity implements UpdateTimeUiListe
 
         mainViewModel.resetTime();
 
-        buttonContainerInStop.setVisibility(View.GONE);
+        setInitialButton();
+    }
+
+    private void setInitialButton() {
         btnStart.setVisibility(View.VISIBLE);
+        buttonContainerInStop.setVisibility(View.GONE);
+        buttonContainerInRun.setVisibility(View.GONE);
+    }
+
+    private void setButtonInStop() {
+        btnStart.setVisibility(View.GONE);
+        buttonContainerInStop.setVisibility(View.VISIBLE);
+        buttonContainerInRun.setVisibility(View.GONE);
+    }
+
+    private void setButtonInRun() {
+        btnStart.setVisibility(View.GONE);
+        buttonContainerInStop.setVisibility(View.GONE);
+        buttonContainerInRun.setVisibility(View.VISIBLE);
     }
 }
