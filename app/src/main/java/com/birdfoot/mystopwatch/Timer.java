@@ -29,7 +29,7 @@ public class Timer {
             nowTime = System.nanoTime();
 
             // 시간 UI 업데이트
-            listener.onSetTime(nowTime-baseTime);
+            listener.onStartTime(nowTime-baseTime);
 
             // 1/100초마다 수행
             handler.sendEmptyMessageDelayed(SEND_TIME, 10);

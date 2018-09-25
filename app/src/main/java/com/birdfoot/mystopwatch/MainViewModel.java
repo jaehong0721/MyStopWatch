@@ -16,7 +16,7 @@ public class MainViewModel extends ViewModel implements SetTimeListener {
 
     private UpdateTimeUiListener listener;
 
-    @Override public void onSetTime(long time) {
+    @Override public void onStartTime(long time) {
         nowTime = time;
         listener.onUpdateNowTimeUi();
     }
